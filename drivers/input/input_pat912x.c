@@ -20,8 +20,8 @@
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/util.h>
 
-/* Zephyr 3.5 compatibility: pat912x_sign_extend() was added in Zephyr 3.7+ */
-static inline int32_t pat912x_pat912x_sign_extend(uint32_t value, int bit) {
+/* Zephyr 3.5 compatibility: Zephyr's sign_extend() was added in 3.7+ */
+static inline int32_t pat912x_sign_extend(uint32_t value, int bit) {
 	int32_t shift = 31 - bit;
 	return (int32_t)(value << shift) >> shift;
 }
