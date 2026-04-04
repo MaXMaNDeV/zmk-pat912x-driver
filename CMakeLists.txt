@@ -1,0 +1,5 @@
+if(CONFIG_INPUT_PAT912X)
+  zephyr_library()
+  zephyr_library_sources(drivers/input/input_pat912x.c)
+  zephyr_include_directories(include)
+endif()
