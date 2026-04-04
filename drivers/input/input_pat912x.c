@@ -202,10 +202,9 @@ static int pat912x_configure(const struct device *dev)
 		return -ENOTSUP;
 	}
 
-	/* Software reset */
-
-	i2c_reg_write_byte_dt(&cfg->i2c, PAT912X_CONFIGURATION, CONFIGURATION_RESET);
-	/* no ret value check, the device NACKs */
+	/* Software reset - DISABLED for nRF52840 I2C compatibility
+	 * CONFIGURATION_RESET causes I2C communication errors on nRF52840 */
+	/* i2c_reg_write_byte_dt(&cfg->i2c, PAT912X_CONFIGURATION, CONFIGURATION_RESET); */
 
 	k_sleep(K_MSEC(RESET_DELAY_MS));
 
