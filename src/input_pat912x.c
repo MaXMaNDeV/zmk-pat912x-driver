@@ -81,6 +81,12 @@ struct pat912x_data {
 	struct gpio_callback motion_cb;
 };
 
+/* Rate limiter: accumulate movements and report at max 125Hz (8ms interval)
+ * Reduces BLE HID traffic without losing movement data */
+static int64_t pat912x_last_report_time;
+static int32_t pat912x_pending_x;
+static int32_t pat912x_pending_y;
+
 static void pat912x_motion_work_handler(struct k_work *work)
 {
 	struct pat912x_data *data = CONTAINER_OF(
@@ -126,6 +132,21 @@ static void pat912x_motion_work_handler(struct k_work *work)
 	}
 
 	LOG_DBG("x=%4d y=%4d", x, y);
+
+	/* Rate limiter: accumulate and report at max 125Hz */
+	{
+		int64_t now = k_uptime_get();
+		pat912x_pending_x += x;
+		pat912x_pending_y += y;
+		if (now - pat912x_last_report_time < 8) {
+			return; /* too soon, data accumulated for next report */
+		}
+		pat912x_last_report_time = now;
+		x = pat912x_pending_x;
+		y = pat912x_pending_y;
+		pat912x_pending_x = 0;
+		pat912x_pending_y = 0;
+	}
 
 	if (cfg->axis_x >= 0) {
 		bool sync = cfg->axis_y < 0;
