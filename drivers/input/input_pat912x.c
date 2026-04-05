@@ -7,6 +7,7 @@
 #define DT_DRV_COMPAT pixart_pat912x
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
@@ -81,6 +82,15 @@ struct pat912x_data {
 	struct gpio_callback motion_cb;
 };
 
+/* Accumulator filter: typing vibration prevention (no k_work_submit version)
+ * - Accumulates small movements below threshold
+ * - Reports accumulated value when threshold exceeded
+ * - Resets after 50ms timeout (vibration discarded)
+ * - No k_work_submit loop = battery safe (CPU can sleep) */
+static int pat912x_acc_x;
+static int pat912x_acc_y;
+static int64_t pat912x_acc_last_time;
+
 static void pat912x_motion_work_handler(struct k_work *work)
 {
 	struct pat912x_data *data = CONTAINER_OF(
@@ -126,6 +136,25 @@ static void pat912x_motion_work_handler(struct k_work *work)
 	}
 
 	LOG_DBG("x=%4d y=%4d", x, y);
+
+	/* Accumulator filter (threshold=3, timeout=50ms) */
+	{
+		int64_t now = k_uptime_get();
+		if (now - pat912x_acc_last_time > 50) {
+			pat912x_acc_x = 0;
+			pat912x_acc_y = 0;
+		}
+		pat912x_acc_last_time = now;
+		pat912x_acc_x += x;
+		pat912x_acc_y += y;
+		if (abs(pat912x_acc_x) + abs(pat912x_acc_y) <= 3) {
+			return; /* drop small movement, next motion triggers via GPIO */
+		}
+		x = pat912x_acc_x;
+		y = pat912x_acc_y;
+		pat912x_acc_x = 0;
+		pat912x_acc_y = 0;
+	}
 
 	if (cfg->axis_x >= 0) {
 		bool sync = cfg->axis_y < 0;
