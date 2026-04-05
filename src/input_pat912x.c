@@ -139,7 +139,10 @@ static void pat912x_motion_work_handler(struct k_work *work)
 		pat912x_pending_x += x;
 		pat912x_pending_y += y;
 		if (now - pat912x_last_report_time < 8) {
-			return; /* too soon, data accumulated for next report */
+			/* Re-schedule to report after rate limit window.
+			 * This loops for at most 8ms (bounded, not infinite). */
+			k_work_submit(&data->motion_work);
+			return;
 		}
 		pat912x_last_report_time = now;
 		x = pat912x_pending_x;
