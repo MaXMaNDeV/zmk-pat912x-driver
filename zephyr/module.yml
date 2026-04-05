@@ -1,5 +1,5 @@
 build:
   cmake: .
-  kconfig: ./drivers/input/Kconfig.pat912x
+  kconfig: ./Kconfig.pat912x
   settings:
     dts_root: .
