@@ -147,7 +147,7 @@ static void pat912x_motion_work_handler(struct k_work *work)
 		pat912x_acc_last_time = now;
 		pat912x_acc_x += x;
 		pat912x_acc_y += y;
-		if (abs(pat912x_acc_x) + abs(pat912x_acc_y) <= 3) {
+		if (abs(pat912x_acc_x) + abs(pat912x_acc_y) <= 0) { /* threshold=0 for testing */
 			return; /* drop small movement, next motion triggers via GPIO */
 		}
 		x = pat912x_acc_x;
