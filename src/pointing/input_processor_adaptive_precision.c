@@ -18,7 +18,8 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 struct ap_config {
     int32_t speed_threshold_low;
     int32_t speed_threshold_high;
-    int32_t precision_divisor;
+    int32_t precision_numerator;
+    int32_t precision_denominator;
     int32_t min_dwell_ms;
 };
 
@@ -79,9 +80,9 @@ static int ap_handle_event(const struct device *dev, struct input_event *event,
     /* Apply precision scaling when active */
     if (data->precision_active) {
         int16_t *acc = (event->code == INPUT_REL_X) ? &data->acc_x : &data->acc_y;
-        int32_t accumulated = *acc + raw;
-        int16_t scaled = accumulated / cfg->precision_divisor;
-        *acc = accumulated - (scaled * cfg->precision_divisor);
+        int32_t accumulated = *acc + raw * cfg->precision_numerator;
+        int16_t scaled = accumulated / cfg->precision_denominator;
+        *acc = accumulated - (scaled * cfg->precision_denominator);
         event->value = scaled;
     }
 
@@ -107,7 +108,8 @@ static struct zmk_input_processor_driver_api ap_driver_api = {
     static const struct ap_config ap_config_##n = {                                                \
         .speed_threshold_low = DT_INST_PROP(n, speed_threshold_low),                               \
         .speed_threshold_high = DT_INST_PROP(n, speed_threshold_high),                             \
-        .precision_divisor = DT_INST_PROP(n, precision_divisor),                                   \
+        .precision_numerator = DT_INST_PROP_OR(n, precision_numerator, 1),                           \
+        .precision_denominator = DT_INST_PROP(n, precision_denominator),                            \
         .min_dwell_ms = DT_INST_PROP_OR(n, min_dwell_ms, 50),                                     \
     };                                                                                             \
     DEVICE_DT_INST_DEFINE(n, &ap_init, NULL, &ap_data_##n, &ap_config_##n, POST_KERNEL,            \

@@ -24,12 +24,19 @@ properties:
     description: |
       Speed-squared threshold to exit precision mode (hysteresis).
       Must be greater than speed-threshold-low. Start with 80.
-  precision-divisor:
+  precision-numerator:
+    type: int
+    default: 1
+    description: |
+      Numerator for precision scaling fraction.
+      Combined with precision-denominator: speed = numerator/denominator.
+      e.g. numerator=2, denominator=5 → 2/5 speed.
+  precision-denominator:
     type: int
     required: true
     description: |
-      Divisor for cursor movement in precision mode.
-      3 = 1/3 speed, 4 = 1/4 speed.
+      Denominator for precision scaling fraction.
+      e.g. denominator=2 with default numerator=1 → 1/2 speed.
   min-dwell-ms:
     type: int
     default: 50
