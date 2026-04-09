@@ -6,9 +6,9 @@
             compatible = "zmk,input-processor-adaptive-precision";
             #input-processor-cells = <0>;
             speed-threshold-low = <80>;
-            speed-threshold-high = <400>;
-            precision-numerator = <2>;
-            precision-denominator = <5>;
+            speed-threshold-high = <320>;
+            precision-numerator = <1>;
+            precision-denominator = <2>;
             min-dwell-ms = <50>;
         };
     };
