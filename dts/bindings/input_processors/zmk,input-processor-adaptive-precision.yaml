@@ -1,0 +1,38 @@
+# Copyright (c) 2024 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+description: |
+  Input processor for adaptive precision (auto-snipe).
+  Automatically reduces cursor speed when trackball movement slows down,
+  enabling precision mode without holding a modifier key.
+
+compatible: "zmk,input-processor-adaptive-precision"
+
+include: ip_zero_param.yaml
+
+properties:
+  speed-threshold-low:
+    type: int
+    required: true
+    description: |
+      Speed-squared threshold to enter precision mode.
+      Computed as dx*dx + dy*dy per sensor report pair.
+      Lower value = harder to trigger. Start with 20.
+  speed-threshold-high:
+    type: int
+    required: true
+    description: |
+      Speed-squared threshold to exit precision mode (hysteresis).
+      Must be greater than speed-threshold-low. Start with 80.
+  precision-divisor:
+    type: int
+    required: true
+    description: |
+      Divisor for cursor movement in precision mode.
+      3 = 1/3 speed, 4 = 1/4 speed.
+  min-dwell-ms:
+    type: int
+    default: 50
+    description: |
+      Minimum time (ms) to stay in each mode before switching.
+      Prevents rapid oscillation between modes.

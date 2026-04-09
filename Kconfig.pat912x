@@ -8,3 +8,5 @@ config INPUT_PAT912X
 	select I2C
 	help
 	  PAT912X miniature optical navigation chip input driver
+
+rsource "src/pointing/Kconfig"
