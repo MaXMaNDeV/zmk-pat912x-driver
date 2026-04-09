@@ -1,0 +1,14 @@
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
+/ {
+    input_processors {
+        zip_adaptive_precision: zip_adaptive_precision {
+            compatible = "zmk,input-processor-adaptive-precision";
+            #input-processor-cells = <0>;
+            speed-threshold-low = <80>;
+            speed-threshold-high = <320>;
+            precision-divisor = <2>;
+            min-dwell-ms = <50>;
+        };
+    };
+};

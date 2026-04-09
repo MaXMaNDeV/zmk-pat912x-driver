@@ -1,0 +1,7 @@
+config ZMK_INPUT_PROCESSOR_ADAPTIVE_PRECISION
+	bool "Adaptive precision input processor (auto-snipe)"
+	default y
+	depends on DT_HAS_ZMK_INPUT_PROCESSOR_ADAPTIVE_PRECISION_ENABLED
+	help
+	  Automatically reduces cursor speed when trackball movement
+	  slows down, enabling precision mode without a modifier key.

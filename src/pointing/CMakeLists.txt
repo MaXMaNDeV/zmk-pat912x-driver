@@ -1,0 +1,5 @@
+if(CONFIG_ZMK_INPUT_PROCESSOR_ADAPTIVE_PRECISION)
+  zephyr_include_directories(${APPLICATION_SOURCE_DIR}/include)
+  zephyr_library()
+  zephyr_library_sources(input_processor_adaptive_precision.c)
+endif()
